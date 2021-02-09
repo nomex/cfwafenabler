@@ -40,6 +40,14 @@ def getwafid(cf,ZONE_ID):
     return(WAF_ID)
 
 
+def setRule(cf,mode,ZONE_ID,WAF_ID,_id,_data,rule):
+    try:
+        cf.zones.firewall.waf.packages.rules.patch(ZONE_ID, WAF_ID, _id, data=_data)
+    except CloudFlare.exceptions.CloudFlareAPIError as e:
+        log.error('Error: RuleID {}: {}'.format(_id, e))
+        log.error(json.dumps(rule, indent=4))
+
+
 def changeRules(cf,mode,ZONE_ID,WAF_ID): 
     page_number = 0
     while True:
@@ -56,25 +64,33 @@ def changeRules(cf,mode,ZONE_ID,WAF_ID):
 
         for rule in waf_rules['result']:
             _id = rule['id']
+            _data = {'mode': mode}
+            _description = rule['description']
+            _current_mode = rule['mode']
+            if 'default_mode' in rule:
+                _default_mode = rule['default_mode']
 
             if mode not in rule['allowed_modes']:
                 log.warning('{} mode is not available for rule {}'.format(mode,_id))
                 continue
 
+            if rule['default_mode'] == 'disable':
+                if rule['mode'] == 'disable':
+                    log.info('Rule {} is disabled by default. Not doing anything'.format(_id))
+                    continue
+                else:
+                    log.info('Rule {} is disabled by default. Setting as disabled'.format(_id))
+                    _data = {'mode': 'disable'} 
+                    setRule(cf,mode,ZONE_ID,WAF_ID,_id,_data,rule)
+                    continue
+
             if rule['mode'] == mode:
                 log.info('Rule {} is already in {} mode'.format(_id,mode))
                 continue
 
-            _data = {'mode': mode}
-            _description = rule['description']
-            _current_mode = rule['mode']
-            _default_mode = rule['default_mode']
+
             log.info('{} mode is available, changing {} to {} mode'.format(mode,_id,mode))
-            try:
-                cf.zones.firewall.waf.packages.rules.patch(ZONE_ID, WAF_ID, _id, data=_data)
-            except CloudFlare.exceptions.CloudFlareAPIError as e:
-                log.error('Error: RuleID {}: {}'.format(_id, e))
-                log.error(json.dumps(rule, indent=4))
+            setRule(cf,mode,ZONE_ID,WAF_ID,_id,_data,rule)
 
         if page_number == total_pages:
             break
