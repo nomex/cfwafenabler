@@ -6,7 +6,24 @@ cfwafenabler allows you to mass-modify all the rules to put your WAF in Simulate
 # Installation
 
 To install cfwafenabler just use [pipx](https://github.com/pipxproject/pipx)
-> pipx install cfwafenabler
+```
+pipx install cfwafenabler
+```
+
+# Usage
+
+Before executing cfwafenabler, you need to set some CloudFlare environment variables.
+If you use API key ( global permissions ) you need to set:
+
+```
+export CF_API_EMAIL=your@email.com
+export CF_API_KEY=YouApiKey
+```
+
+If you are using CloudFlare API tokens, you only need to set (it's the same env variable, they reuse it):
+```
+export CF_API_KEY=YouApiToken
+```
 
 # Credits
 
