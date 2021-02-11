@@ -24,6 +24,10 @@ If you are using CloudFlare API tokens, you only need to set (it's the same env 
 ```
 export CF_API_KEY=YouApiToken
 ```
+This token needs the following permissions:
+```
+Zone.Zone, Zone.Firewall Services
+```
 
 # Credits
 

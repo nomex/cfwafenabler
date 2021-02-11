@@ -26,6 +26,7 @@ cfwafenabler = 'cfwafenabler.__main__:main'
 python = "^3.8.0"
 cloudflare = "^2.8.15"
 configparser = "^5.0.1"
+requests = "^2.25.1"
 simple-term-menu = "^0.10.5"
 
 [tool.poetry.dev-dependencies]

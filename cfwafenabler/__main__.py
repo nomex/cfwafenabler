@@ -1,7 +1,10 @@
 import logging
+import sys
+import os
 import CloudFlare
 import json
 from simple_term_menu import TerminalMenu
+
 
 
 handler = logging.StreamHandler()
@@ -111,7 +114,25 @@ def areYouSure(mode,ZONE_NAME):
     menu_entry = terminal_menu.show()
     return menu_entry
 
+def usage():
+    log.error('You need to set CF_API_KEY environment variable to run cfwafenabler.')
+    log.error('Instructions available in https://github.com/nomex/cfwafenabler')
+
 def main():
+
+    if os.getenv("CF_API_KEY"):
+        CF_API_KEY = os.getenv("CF_API_KEY")
+        if os.getenv("CF_API_EMAIL"):
+            CF_API_EMAIL = os.getenv("CF_API_EMAIL")
+            cf = CloudFlare.CloudFlare(token=CF_API_KEY,email=CF_API_EMAIL,raw=True)
+        else:
+            cf = CloudFlare.CloudFlare(token=CF_API_KEY,raw=True)
+    else:
+        usage()
+        sys.exit(1)
+
+
+
     cf = CloudFlare.CloudFlare(raw=True)
 
     ZONE_ID,ZONE_NAME=getzoneid(cf)
