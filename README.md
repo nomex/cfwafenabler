@@ -26,7 +26,7 @@ export CF_API_KEY=YouApiToken
 ```
 This token needs the following permissions:
 ```
-Zone.Zone, Zone.Firewall Services
+Zone.Zone:Read, Zone.Firewall Services:Edit
 ```
 
 # Credits
